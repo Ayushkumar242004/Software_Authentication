@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login, logout
 from .middlewares import auth, guest
+from django.contrib import messages
+
 # Create your views here.
 
 @guest
@@ -23,13 +25,17 @@ def login_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request,user)
+            login(request, user)
+
+            # Set success message
+            messages.success(request, "OTP has been sent to your email.")
+
             return redirect('dashboard')
     else:
-        initial_data = {'username':'', 'password':''}
+        initial_data = {'username': '', 'password': ''}
         form = AuthenticationForm(initial=initial_data)
-    return render(request, 'auth/login.html',{'form':form}) 
-
+    return render(request, 'auth/login.html', {'form': form})
+    
 @auth
 def dashboard_view(request):
     return render(request, 'dashboard.html')
